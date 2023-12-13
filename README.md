@@ -1,6 +1,6 @@
 # flutterapp_login
 
-In this project I worked with Firebase 
+In this project I worked with Supabase 
 
 ## Getting Started
 
