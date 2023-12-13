@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterapp_login/reausable_widgets/reausable_widget.dart';
+import 'package:flutterapp_login/screens/signup_screen.dart';
 import 'package:flutterapp_login/utils/colors_utils.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -45,10 +46,34 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
               reusableTextfield(
                   "Password", Icons.lock_outline, true, passwordTextController),
+              const SizedBox(
+                height: 30,
+              ),
+              signInSignUpButton(context, true, () {}),
+              signUpOption()
             ],
           ),
         )),
       ),
+    );
+  }
+
+  Row signUpOption() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text('No tienes una cuenta?',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => SignUpScreen()));
+          },
+          child: const Text(' Registrate',
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        ),
+      ],
     );
   }
 }
