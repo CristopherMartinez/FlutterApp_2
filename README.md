@@ -1,6 +1,6 @@
 # flutterapp_login
 
-A new Flutter project.
+In this project I worked with Firebase 
 
 ## Getting Started
 
