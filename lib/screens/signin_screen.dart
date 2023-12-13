@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterapp_login/reausable_widgets/reausable_widget.dart';
 import 'package:flutterapp_login/utils/colors_utils.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -9,6 +10,9 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+  TextEditingController passwordTextController = TextEditingController();
+  TextEditingController emailTextController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,21 +34,21 @@ class _SignInScreenState extends State<SignInScreen> {
           child: Column(
             children: <Widget>[
               logoWidget("assets/images/logo1.png"),
+              const SizedBox(
+                height: 30,
+              ),
+              //Use the function that returns depending of the parameters
+              reusableTextfield(
+                  "Usuario", Icons.person_outline, false, emailTextController),
+              const SizedBox(
+                height: 30,
+              ),
+              reusableTextfield(
+                  "Password", Icons.lock_outline, true, passwordTextController),
             ],
           ),
         )),
       ),
-    );
-  }
-
-  //Function to return a imagen with properties predefined
-  Image logoWidget(String imageName) {
-    return Image.asset(
-      imageName,
-      fit: BoxFit.fitWidth,
-      width: 240,
-      height: 240,
-      color: Colors.white,
     );
   }
 }
