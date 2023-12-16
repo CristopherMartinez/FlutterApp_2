@@ -50,6 +50,9 @@ class _SignInScreenState extends State<SignInScreen> {
                 height: 30,
               ),
               signInSignUpButton(context, true, () {}),
+              const SizedBox(
+                height: 30,
+              ),
               signUpOption()
             ],
           ),

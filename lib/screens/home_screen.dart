@@ -4,7 +4,10 @@ import 'package:flutterapp_login/screens/signin_screen.dart';
 import 'package:flutterapp_login/utils/colors_utils.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final String name;
+  final String lastname;
+  //Constructor
+  const HomeScreen({super.key, required this.name, required this.lastname});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -21,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
               onPressed: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                         builder: (context) => const SignInScreen()));
@@ -58,11 +61,20 @@ class _HomeScreenState extends State<HomeScreen> {
           hexStringToColor("9546C4"),
           hexStringToColor("5E61F4")
         ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
-        child: const SingleChildScrollView(
+        child: SingleChildScrollView(
             child: Padding(
-          padding: EdgeInsets.fromLTRB(20, 120, 20, 0),
+          padding: const EdgeInsets.fromLTRB(20, 120, 20, 0),
           child: Column(
-            children: <Widget>[Text('This is a test')],
+            children: <Widget>[
+              Text(
+                //We can access to the name and lastname using widget
+                'BIENVENID(A) ${widget.name.toUpperCase()} ${widget.lastname.toUpperCase()}',
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.white),
+              )
+            ],
           ),
         )),
       ),
