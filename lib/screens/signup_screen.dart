@@ -7,6 +7,7 @@ import 'package:flutterapp_login/reausable_widgets/reausable_widget.dart';
 import 'package:flutterapp_login/screens/home_screen.dart';
 //import 'package:flutterapp_login/services/service_db.dart';
 import 'package:flutterapp_login/utils/colors_utils.dart';
+import 'package:flutterapp_login/utils/reausable_utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -220,8 +221,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                       Map<String, dynamic> userJson = user.toJson();
 
+                      /*await instanceSupabase.auth.signUp(
+                          email: emailTextController.text.trim(),
+                          password: passwordController.text.trim(),
+                          data: user.toJson(),
+                          emailRedirectTo: 'io.supabase.flutterquickstart://login-callback/');*/
+
                       //Insert the user in supabase
-                      await instanceSupabase.from('user').insert(userJson);
+                      //await instanceSupabase.from('user').insert(userJson);
 
                       if (!context.mounted) return;
                       //if all is good, go to the HomeScreen
@@ -253,30 +260,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       backgroundColor: Colors.red,
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
-  String? validateEmail(String? email) {
-    RegExp emailRegex = RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$');
-    final isEmailValid = emailRegex.hasMatch(email ?? '');
-    if (!isEmailValid) {
-      return 'Ingresa un email valido';
-    }
-    return null;
-  }
-
-  //ValidatePassword
-  String? validatePassword(String? value) {
-    RegExp regex =
-        RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
-    if (value!.isEmpty) {
-      return 'Escribe un password';
-    } else {
-      if (!regex.hasMatch(value)) {
-        return 'Debe contener al menos una letra Mayuscula\nDebe contener al menos una letra minúscula\nDebe contener al menos un número\nDebe contener al menos 1 caracter especial\nDebe tener al menos 8 caracteres\nEscribe un password valido';
-      } else {
-        return null;
-      }
-    }
   }
 
   void changeVisibilityPassword() {
