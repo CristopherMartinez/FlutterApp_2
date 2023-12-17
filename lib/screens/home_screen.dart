@@ -1,19 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:flutterapp_login/main.dart';
 //import 'package:flutterapp_login/reausable_widgets/reausable_widget.dart';
 import 'package:flutterapp_login/screens/signin_screen.dart';
 import 'package:flutterapp_login/utils/colors_utils.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomeScreen extends StatefulWidget {
+  //For passing parameters
+  /* 
   final String name;
-  final String lastname;
+  final String lastname;*/
   //Constructor
-  const HomeScreen({super.key, required this.name, required this.lastname});
+  const HomeScreen({
+    super.key,
+    /*required this.name, required this.lastname*/
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final User? user = supabase.auth.currentUser;
+  final String? profileId = supabase.auth.currentUser?.id;
+  final instanceSupabase = Supabase.instance.client; //get the id of the user
+  String nameUser = '';
+
+  @override
+  void initState() {
+    super.initState();
+    getDataUser();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +41,9 @@ class _HomeScreenState extends State<HomeScreen> {
         //We can use actions for put the button in this case in the end
         actions: [
           IconButton(
-              onPressed: () {
+              onPressed: () async {
+                await supabase.auth.signOut();
+                if (!context.mounted) return;
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
@@ -68,16 +88,26 @@ class _HomeScreenState extends State<HomeScreen> {
             children: <Widget>[
               Text(
                 //We can access to the name and lastname using widget
-                'BIENVENID(A) ${widget.name.toUpperCase()} ${widget.lastname.toUpperCase()}',
+                //${user?.email?.toUpperCase()} email
+                //${nameUser.toUpperCase()}
+                'BIENVENID(A)  ${user?.email?.toUpperCase()}',
                 style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                     color: Colors.white),
+                textAlign: TextAlign.center, //center the text
               )
             ],
           ),
         )),
       ),
     );
+  }
+
+  //test
+  Future<void> getDataUser() async {
+    var response =
+        await instanceSupabase.from('profiles').select().eq('id', {profileId});
+    response[0]['name'] = nameUser;
   }
 }

@@ -1,10 +1,10 @@
-import 'dart:convert';
+//import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutterapp_login/Models/UserSupabase.dart';
+//import 'package:flutterapp_login/Models/UserSupabase.dart';
 import 'package:flutterapp_login/reausable_widgets/reausable_widget.dart';
-import 'package:flutterapp_login/screens/home_screen.dart';
+//import 'package:flutterapp_login/screens/home_screen.dart';
 //import 'package:flutterapp_login/services/service_db.dart';
 import 'package:flutterapp_login/utils/colors_utils.dart';
 import 'package:flutterapp_login/utils/reausable_utils.dart';
@@ -213,31 +213,67 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   signInSignUpButton(context, false, () async {
                     //Validate the form
                     if (_formKey.currentState!.validate()) {
-                      UserSupabase user = UserSupabase(
+                      /*UserSupabase user = UserSupabase(
                           nameTextController.text,
                           lastNameController.text,
                           emailTextController.text,
                           passwordController.text);
 
-                      Map<String, dynamic> userJson = user.toJson();
+                      Map<String, dynamic> userJson = user.toJson(); correct*/
 
-                      /*await instanceSupabase.auth.signUp(
-                          email: emailTextController.text.trim(),
-                          password: passwordController.text.trim(),
-                          data: user.toJson(),
-                          emailRedirectTo: 'io.supabase.flutterquickstart://login-callback/');*/
+                      //validate if the user doesnt exist in the Users and after that signup, if exist return , the user is created in both tables, Users and Profiles in supabase when user SignUp
+                      //correct
+                      var response = await instanceSupabase
+                          .from('profiles')
+                          .select()
+                          .eq('email', emailTextController.text.trim());
+                      //if the response is not empty
+                      if (response.isNotEmpty) {
+                        showErrorMessage(
+                            'Ya se ha registrado este correo favor de verificar');
+                        return;
+                      }
+                      //Defined the AuthResponse
+                      final AuthResponse response2 = await instanceSupabase.auth
+                          .signUp(
+                              email: emailTextController.text.trim(),
+                              password: passwordController.text.trim(),
+                              emailRedirectTo:
+                                  'io.supabase.flutterquickstart://login-callback/');
 
-                      //Insert the user in supabase
-                      //await instanceSupabase.from('user').insert(userJson);
+                      //get the userId
+                      final profileId = response2.user!.id;
+                      try {
+                        //upsert into profiles
+                        await instanceSupabase.from('profiles').upsert({
+                          'id': profileId,
+                          'name': nameTextController.text,
+                          'lastname': lastNameController.text,
+                          'email': emailTextController.text.trim(),
+                          'password': passwordController.text.trim(),
+                          'updated_at': DateTime.now().toIso8601String()
+                        });
+                      } catch (e) {
+                        showErrorMessage('Ocurrio un error');
+                      }
 
-                      if (!context.mounted) return;
-                      //if all is good, go to the HomeScreen
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => HomeScreen(
-                                  name: nameTextController.text,
-                                  lastname: lastNameController.text)));
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              showCloseIcon: true,
+                              backgroundColor: Colors.green,
+                              content: Text(
+                                  'Se ha enviado un correo para confirmar la cuenta')),
+                        );
+
+                        nameTextController.clear();
+                        lastNameController.clear();
+                        emailTextController.clear();
+                        passwordController.clear();
+
+                        //if all is good, go to the HomeScreen
+                        Navigator.of(context).pushReplacementNamed('/signIn');
+                      }
                     }
                   })
                 ],
@@ -249,9 +285,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   //Test
   Future<void> fetchDataSupabase() async {
+    //await instanceSupabase.from('profiles').insert(userJson);
     //final supabase = Supabase.instance.client;
     //var response = await supabase.from('user').select('*');
     //print(response);
+
+    /*var response = await instanceSupabase
+        .from('profiles')
+        .select()
+        .eq('email', 'martinezcristopher69@gmai.com');
+
+    if (response.isEmpty) {
+      print("No existe usuario");
+    } else {
+      print("Ya se ha registrado este correo");
+    }*/
   }
 
   void showErrorMessage(String message) {

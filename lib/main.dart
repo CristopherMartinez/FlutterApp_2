@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutterapp_login/screens/home_screen.dart';
 import 'package:flutterapp_login/screens/signin_screen.dart';
+import 'package:flutterapp_login/screens/signup_screen.dart';
+import 'package:flutterapp_login/splash_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart'; //import the package of supabase
 
 //This app is a LoginPage and SingUpPage with Supabase
@@ -37,7 +40,14 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const SignInScreen(),
+      //home: const SignInScreen(),
+      initialRoute: '/splash',
+      routes: <String, WidgetBuilder>{
+        '/signIn': (_) => const SignInScreen(),
+        '/home': (_) => const HomeScreen(),
+        '/signUp': (_) => const SignUpScreen(),
+        '/splash': (_) => const SplashPage(),
+      },
     );
   }
 }

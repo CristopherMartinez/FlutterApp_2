@@ -9,7 +9,7 @@ class Servicedb {
 
   Future<List> getUsers() async {
     var response = await client.from('user').select('*');
-    print(response);
+    //print(response);
     return response ?? [];
   }
 }

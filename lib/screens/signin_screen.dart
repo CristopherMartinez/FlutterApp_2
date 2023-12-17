@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterapp_login/reausable_widgets/reausable_widget.dart';
-import 'package:flutterapp_login/screens/home_screen.dart';
+//import 'package:flutterapp_login/screens/home_screen.dart';
 import 'package:flutterapp_login/screens/signup_screen.dart';
 import 'package:flutterapp_login/utils/colors_utils.dart';
 import 'package:flutterapp_login/utils/reausable_utils.dart';
@@ -106,15 +106,38 @@ class _SignInScreenState extends State<SignInScreen> {
                         )), //The color of the error
                     keyboardType: TextInputType.visiblePassword,
                     obscureText: visibilityPassword, //For password
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Ingresa un password';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(
                     height: 30,
                   ),
                   signInSignUpButton(context, true, () async {
-                    //if (!context.mounted) return;
-                    //Go to Page Home
-                    //Navigator.push(context,
-                    //    MaterialPageRoute(builder: (context) => HomeScreen()));
+                    if (_formKey.currentState!.validate()) {
+                      try {
+                        //final AuthResponse res =
+                        await supabase.auth.signInWithPassword(
+                          email: emailTextController.text.trim(),
+                          password: passwordTextController.text.trim(),
+                        );
+
+                        if (!context.mounted) return;
+                        Navigator.of(context).pushReplacementNamed('/home');
+                      } on AuthException catch (e) {
+                        //add other message in case that the email isnt confirm
+                        if (e.message == "Email not confirmed") {
+                          showErrorMessage('Email no confirmado');
+                        } else if (e.message == "Invalid login credentials") {
+                          //credentials not valid
+                          showErrorMessage('Credenciales invalidas');
+                        }
+                      }
+                    }
                   }),
                   const SizedBox(
                     height: 30,
@@ -151,5 +174,13 @@ class _SignInScreenState extends State<SignInScreen> {
     setState(() {
       visibilityPassword = !visibilityPassword;
     });
+  }
+
+  void showErrorMessage(String message) {
+    final snackBar = SnackBar(
+      content: Text(message, style: const TextStyle(color: Colors.white)),
+      backgroundColor: Colors.red,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }
