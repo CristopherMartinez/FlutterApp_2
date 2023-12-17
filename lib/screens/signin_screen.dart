@@ -16,13 +16,11 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   TextEditingController passwordTextController = TextEditingController();
   TextEditingController emailTextController = TextEditingController();
-
   //Define the _formKey
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
   final supabase = Supabase.instance.client;
-
   bool visibilityPassword = true;
+  bool isLoading = false; //for the circularprogressindicator
 
   @override
   Widget build(BuildContext context) {
@@ -120,6 +118,23 @@ class _SignInScreenState extends State<SignInScreen> {
                   signInSignUpButton(context, true, () async {
                     if (_formKey.currentState!.validate()) {
                       try {
+                        setState(() {
+                          isLoading = true;
+                        });
+                        //validate if the user exist in the table profiles if doesnt exist return a message 'No existe el usuario registrado en la bd'
+                        var response = await supabase
+                            .from('profiles')
+                            .select()
+                            .eq('email', emailTextController.text.trim());
+                        //if the response is not empty
+                        if (response.isEmpty) {
+                          setState(() {
+                            isLoading = false;
+                          });
+                          showErrorMessage('Aun no se registra este correo');
+                          return;
+                        }
+
                         //final AuthResponse res =
                         await supabase.auth.signInWithPassword(
                           email: emailTextController.text.trim(),
@@ -127,18 +142,34 @@ class _SignInScreenState extends State<SignInScreen> {
                         );
 
                         if (!context.mounted) return;
+                        setState(() {
+                          isLoading = false;
+                        });
                         Navigator.of(context).pushReplacementNamed('/home');
                       } on AuthException catch (e) {
                         //add other message in case that the email isnt confirm
                         if (e.message == "Email not confirmed") {
+                          setState(() {
+                            isLoading = false;
+                          });
                           showErrorMessage('Email no confirmado');
                         } else if (e.message == "Invalid login credentials") {
                           //credentials not valid
+                          setState(() {
+                            isLoading = false;
+                          });
                           showErrorMessage('Credenciales invalidas');
                         }
                       }
                     }
                   }),
+                  const SizedBox(height: 16),
+                  Visibility(
+                    visible: isLoading,
+                    child: const CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
+                  ),
                   const SizedBox(
                     height: 30,
                   ),

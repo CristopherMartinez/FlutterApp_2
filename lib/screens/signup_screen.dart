@@ -24,11 +24,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController lastNameController = TextEditingController();
   //late Servicedb _servicedb;
   final instanceSupabase = Supabase.instance.client;
-
   //Define the _formKey
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
   bool visibilityPassword = true;
+  bool isLoading = false; //for the circularprogressindicator
 
   @override
   void initState() {
@@ -210,9 +209,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     validator: validatePassword,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                   ),
+
                   signInSignUpButton(context, false, () async {
                     //Validate the form
                     if (_formKey.currentState!.validate()) {
+                      //initialize the progress indicator
+                      setState(() {
+                        isLoading = true;
+                      });
                       /*UserSupabase user = UserSupabase(
                           nameTextController.text,
                           lastNameController.text,
@@ -229,6 +233,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           .eq('email', emailTextController.text.trim());
                       //if the response is not empty
                       if (response.isNotEmpty) {
+                        setState(() {
+                          isLoading = false;
+                        });
                         showErrorMessage(
                             'Ya se ha registrado este correo favor de verificar');
                         return;
@@ -254,6 +261,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           'updated_at': DateTime.now().toIso8601String()
                         });
                       } catch (e) {
+                        setState(() {
+                          isLoading = false;
+                        });
                         showErrorMessage('Ocurrio un error');
                       }
 
@@ -271,11 +281,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         emailTextController.clear();
                         passwordController.clear();
 
+                        //stop the indicator
+                        setState(() {
+                          isLoading = false;
+                        });
+
                         //if all is good, go to the HomeScreen
                         Navigator.of(context).pushReplacementNamed('/signIn');
                       }
                     }
-                  })
+                  }),
+                  const SizedBox(height: 16),
+                  Visibility(
+                    visible: isLoading,
+                    child: const CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
+                  ),
                 ],
               ),
             )),
