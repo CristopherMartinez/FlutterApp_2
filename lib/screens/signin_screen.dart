@@ -162,6 +162,9 @@ class _SignInScreenState extends State<SignInScreen> {
                         }
                       }
                     }
+                    setState(() {
+                      isLoading = false;
+                    });
                   }),
                   const SizedBox(height: 16),
                   Visibility(
