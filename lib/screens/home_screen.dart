@@ -25,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final String? profileId = supabase.auth.currentUser?.id;
   final instanceSupabase = Supabase.instance.client; //get the id of the user
   String nameUser = '';
+  int currentPageIndex = 0;
 
   @override
   void initState() {
@@ -35,28 +36,28 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        //This property is for delete the navigationbar
-        automaticallyImplyLeading: false,
-        //We can use actions for put the button in this case in the end
-        actions: [
-          IconButton(
-              onPressed: () async {
-                await supabase.auth.signOut();
-                if (!context.mounted) return;
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SignInScreen()));
-              },
-              icon: const Icon(
-                Icons.logout_outlined,
-                color: Colors.white,
-              ))
-        ],
-        backgroundColor: hexStringToColor("CB2B93"),
-        //the leading we can use for a icon before the title
-        /*
+        appBar: AppBar(
+          //This property is for delete the navigationbar
+          automaticallyImplyLeading: false,
+          //We can use actions for put the button in this case in the end
+          actions: [
+            IconButton(
+                onPressed: () async {
+                  await supabase.auth.signOut();
+                  if (!context.mounted) return;
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SignInScreen()));
+                },
+                icon: const Icon(
+                  Icons.logout_outlined,
+                  color: Colors.white,
+                ))
+          ],
+          backgroundColor: hexStringToColor("CB2B93"),
+          //the leading we can use for a icon before the title
+          /*
         leading: IconButton(
           icon: logoWidgetLogOut("assets/images/logo1.png"),
           onPressed: () {
@@ -64,44 +65,88 @@ class _HomeScreenState extends State<HomeScreen> {
                 MaterialPageRoute(builder: (  context) => const SignInScreen()));
           },
         ),*/
-        title: const Text(
-          'Home',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-      ),
-      //Body
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-            gradient: LinearGradient(colors:
-                //The List of the colors
-                [
-          hexStringToColor("CB2B93"),
-          hexStringToColor("9546C4"),
-          hexStringToColor("5E61F4")
-        ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
-        child: SingleChildScrollView(
-            child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 120, 20, 0),
-          child: Column(
-            children: <Widget>[
-              Text(
-                //We can access to the name and lastname using widget
-                //${user?.email?.toUpperCase()} email
-                //${nameUser.toUpperCase()}
-                'BIENVENID(A)  ${user?.email?.toUpperCase()}',
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Colors.white),
-                textAlign: TextAlign.center, //center the text
-              )
-            ],
+          title: const Text(
+            'SupaAPP',
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
-        )),
-      ),
-    );
+        ),
+        //Body
+        body: <Widget>[
+          /// Home page
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            decoration: BoxDecoration(
+                gradient: LinearGradient(colors:
+                    //The List of the colors
+                    [
+              hexStringToColor("CB2B93"),
+              hexStringToColor("9546C4"),
+              hexStringToColor("5E61F4")
+            ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+            child: SingleChildScrollView(
+                child: Padding(
+              padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
+              child: Column(
+                children: <Widget>[
+                  Text(
+                    //We can access to the name and lastname using widget
+                    //${user?.email?.toUpperCase()} email
+                    //${nameUser.toUpperCase()}
+                    'BIENVENID(A)  ${user?.email?.toUpperCase()}',
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Colors.white),
+                    textAlign: TextAlign.center, //center the text
+                  ),
+                ],
+              ),
+            )),
+          ),
+
+          //CRUD PAGE
+          const Scaffold(
+            body: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [Text('CRUD')],
+            ),
+          ),
+
+          //SeetingsPage
+          const Text('SettingsPage')
+        ][currentPageIndex],
+        bottomNavigationBar: NavigationBar(
+          backgroundColor: hexStringToColor("5E61F4"),
+          onDestinationSelected: (int index) {
+            setState(() {
+              currentPageIndex = index;
+            });
+          },
+          indicatorColor: Colors.amber,
+          selectedIndex: currentPageIndex,
+          destinations: const <Widget>[
+            NavigationDestination(
+              selectedIcon: Icon(Icons.home),
+              icon: Icon(
+                Icons.home_outlined,
+              ),
+              label: 'Home',
+            ),
+            NavigationDestination(
+              icon: Icon(
+                Icons.person_2_outlined,
+              ),
+              label: 'Add',
+            ),
+            NavigationDestination(
+              icon: Icon(
+                Icons.settings_applications,
+              ),
+              label: 'Settings',
+            ),
+          ],
+        ));
   }
 
   //test
