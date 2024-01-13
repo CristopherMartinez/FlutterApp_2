@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutterapp_login/reausable_widgets/reausable_widget.dart';
+import 'package:flutterapp_login/screens/home_screen.dart';
 //import 'package:flutterapp_login/screens/home_screen.dart';
 import 'package:flutterapp_login/screens/signup_screen.dart';
 import 'package:flutterapp_login/utils/colors_utils.dart';
 import 'package:flutterapp_login/utils/reausable_utils.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -21,6 +23,12 @@ class _SignInScreenState extends State<SignInScreen> {
   final supabase = Supabase.instance.client;
   bool visibilityPassword = true;
   bool isLoading = false; //for the circularprogressindicator
+
+  @override
+  void initState() {
+    _setupAuthListener();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -176,7 +184,14 @@ class _SignInScreenState extends State<SignInScreen> {
                   const SizedBox(
                     height: 30,
                   ),
-                  signUpOption()
+                  signUpOption(),
+                  //Google icon, change
+                  IconButton(
+                    onPressed: googleSignIn,
+                    icon: const Icon(Icons.person_rounded),
+                    iconSize: 60,
+                    color: Colors.white,
+                  )
                 ],
               ),
             )),
@@ -216,5 +231,54 @@ class _SignInScreenState extends State<SignInScreen> {
       backgroundColor: Colors.red,
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  Future<AuthResponse> googleSignIn() async {
+    /// Web Client ID registered with Google Cloud.
+    const webClientId =
+        '720855316880-dn1f3vgvpj0hv7u740itrh0akgnt9ids.apps.googleusercontent.com';
+
+    /// iOS Client ID registered with Google Cloud.
+    const iosClientId =
+        '720855316880-0o81pieabtpe1hi0f3upce8fnlefj3jk.apps.googleusercontent.com';
+    // Google sign in on Android will work without providing the Android
+    // Client ID registered on Google Cloud.
+
+    final GoogleSignIn googleSignIn = GoogleSignIn(
+      clientId: iosClientId,
+      serverClientId: webClientId,
+    );
+    print(webClientId);
+
+    final googleUser = await googleSignIn.signIn();
+    final googleAuth = await googleUser!.authentication;
+    final accessToken = googleAuth.accessToken;
+    final idToken = googleAuth.idToken;
+
+    if (accessToken == null) {
+      throw 'No Access Token found.';
+    }
+    if (idToken == null) {
+      throw 'No ID Token found.';
+    }
+
+    return supabase.auth.signInWithIdToken(
+      provider: OAuthProvider.google,
+      idToken: idToken,
+      accessToken: accessToken,
+    );
+  }
+
+  void _setupAuthListener() {
+    supabase.auth.onAuthStateChange.listen((data) {
+      final event = data.event;
+      if (event == AuthChangeEvent.signedIn) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const HomeScreen(),
+          ),
+        );
+      }
+    });
   }
 }

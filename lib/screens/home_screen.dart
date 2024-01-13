@@ -1,4 +1,9 @@
+import 'dart:ui_web';
+
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterapp_login/DataCarrusel/dataCarrusel.dart';
+import 'package:flutterapp_login/Models/GameModel.dart';
 import 'package:flutterapp_login/main.dart';
 //import 'package:flutterapp_login/reausable_widgets/reausable_widget.dart';
 import 'package:flutterapp_login/screens/signin_screen.dart';
@@ -89,32 +94,108 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
               child: Column(
                 children: <Widget>[
-                  Text(
+                  const Text(
                     //We can access to the name and lastname using widget
                     //${user?.email?.toUpperCase()} email
                     //${nameUser.toUpperCase()}
-                    'BIENVENID(A)  ${user?.email?.toUpperCase()}',
-                    style: const TextStyle(
+                    'BIENVENID(A)',
+                    style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                         color: Colors.white),
                     textAlign: TextAlign.center, //center the text
                   ),
+                  Column(
+                    children: [
+                      const SizedBox(height: 30),
+                      CarouselSlider.builder(
+                          itemCount: carruselGames.length,
+                          itemBuilder: (context, index, realIndex) {
+                            final carruselGame = carruselGames[index];
+                            return CardImages(
+                              carruselGames: carruselGames[index],
+                            );
+                          },
+                          options: CarouselOptions(
+                              height: 200.0,
+                              autoPlay: true,
+                              autoPlayCurve: Curves.easeInOut,
+                              enlargeCenterPage: true,
+                              autoPlayInterval: const Duration(seconds: 5),
+                              scrollDirection: Axis.horizontal))
+                    ],
+                  )
                 ],
               ),
             )),
           ),
 
           //CRUD PAGE
-          const Scaffold(
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [Text('CRUD')],
+          Scaffold(
+            body: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(colors:
+                      //The List of the colors
+                      [
+                hexStringToColor("CB2B93"),
+                hexStringToColor("9546C4"),
+                hexStringToColor("5E61F4")
+              ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+              child: const SingleChildScrollView(
+                  child: Padding(
+                padding: EdgeInsets.fromLTRB(15, 10, 15, 0),
+                child: Column(
+                  children: <Widget>[
+                    Text(
+                      //We can access to the name and lastname using widget
+                      //${user?.email?.toUpperCase()} email
+                      //${nameUser.toUpperCase()}
+                      'CRUD',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.white),
+                      textAlign: TextAlign.center, //center the text
+                    ),
+                  ],
+                ),
+              )),
             ),
           ),
 
           //SeetingsPage
-          const Text('SettingsPage')
+          Scaffold(
+            body: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(colors:
+                      //The List of the colors
+                      [
+                hexStringToColor("CB2B93"),
+                hexStringToColor("9546C4"),
+                hexStringToColor("5E61F4")
+              ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+              child: const SingleChildScrollView(
+                  child: Padding(
+                padding: EdgeInsets.fromLTRB(15, 10, 15, 0),
+                child: Column(
+                  children: <Widget>[
+                    Text(
+                      'SETTINGS',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.white),
+                      textAlign: TextAlign.center, //center the text
+                    ),
+                  ],
+                ),
+              )),
+            ),
+          ),
         ][currentPageIndex],
         bottomNavigationBar: NavigationBar(
           backgroundColor: hexStringToColor("5E61F4"),
@@ -154,5 +235,27 @@ class _HomeScreenState extends State<HomeScreen> {
     var response =
         await instanceSupabase.from('profiles').select().eq('id', {profileId});
     response[0]['name'] = nameUser;
+  }
+}
+
+//Images of the carrousel
+class CardImages extends StatelessWidget {
+  final GameModel carruselGames;
+  const CardImages({super.key, required this.carruselGames});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 400,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: InkWell(
+            onTap: () {},
+            child: FadeInImage(
+                placeholder: AssetImage("assets/loading1.gif"),
+                image: AssetImage(carruselGames.image),
+                fit: BoxFit.cover)),
+      ),
+    );
   }
 }

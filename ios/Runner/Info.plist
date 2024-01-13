@@ -47,7 +47,7 @@
 	<true/>
 
 	<!-- Add this array for Deep Links -->
-	<key>CFBundleURLTypes</key>
+	<!--<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
 		<key>CFBundleTypeRole</key>
@@ -57,7 +57,23 @@
 			<string>io.supabase.flutterquickstart</string>
 		</array>
 		</dict>
-	</array>
+	</array>-->
+
+
+	<!--Login with google-->
+	 <key>CFBundleURLTypes</key>
+	<array>
+	<dict>
+		<key>CFBundleTypeRole</key>
+		<string>Editor</string>
+		<key>CFBundleURLSchemes</key>
+		<array>
+		<string>720855316880-0o81pieabtpe1hi0f3upce8fnlefj3jk.apps.googleusercontent.com</string>
+		</array>
+	</dict>
+	</array> 
+
+
 
 
 
